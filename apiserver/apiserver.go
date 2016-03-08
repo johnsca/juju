@@ -6,6 +6,8 @@ package apiserver
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -17,6 +19,7 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/alecthomas/jsonschema"
 	"github.com/bmizerany/pat"
 	"github.com/juju/errors"
 	"github.com/juju/loggo"
@@ -491,6 +494,8 @@ func (srv *Server) endpoints() []apihttp.Endpoint {
 	add("/gui-version", &guiVersionHandler{
 		ctxt: httpCtxt,
 	})
+	handleAll(mux, "/model/:modeluuid/api/schemas", http.HandlerFunc(srv.apiSchemaHandler))
+	handleAll(mux, "/model/:modeluuid/api", http.HandlerFunc(srv.apiHandler))
 
 	// For backwards compatibility we register all the old paths
 	add("/log", debugLogHandler)
@@ -621,6 +626,25 @@ func registerEndpoint(ep apihttp.Endpoint, mux *pat.PatternServeMux) {
 	if ep.Method == "GET" {
 		mux.Add("HEAD", ep.Pattern, ep.Handler)
 	}
+}
+
+func (srv *Server) apiSchemaHandler(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case "GET":
+		s := jsonschema.Reflect(srv)
+		b, _ := json.MarshalIndent(s, "", "  ")
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Length", fmt.Sprint(len(b)))
+		w.WriteHeader(200)
+		if _, err := w.Write(b); err != nil {
+			sendError(w, errors.NewBadRequest(errors.Annotatef(err, "failed to write schemas"), ""))
+			return
+		}
+		return
+	default:
+		sendError(w, errors.MethodNotAllowedf("unsupported method: %q", req.Method))
+	}
+
 }
 
 func (srv *Server) apiHandler(w http.ResponseWriter, req *http.Request) {
