@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/alecthomas/jsonschema"
+	"github.com/bcsaller/jsonschema"
 	"github.com/juju/juju/apiserver"
 	"github.com/juju/juju/apiserver/common"
 	"github.com/juju/juju/rpc/rpcreflect"
@@ -43,17 +43,5 @@ func main() {
 	s := apiserver.DescribeFacadeSchemas()
 	b, _ := json.MarshalIndent(s, "", "  ")
 	fmt.Printf("%s\n", b)
-	/*
-	 *enc := json.NewEncoder(os.Stdout)
-	 *facades := common.Facades.List()
-	 *for _, facade := range facades {
-	 *    version := facade.Versions[len(facade.Versions)-1]
-	 *    kind, err := common.Facades.GetType(facade.Name, version)
-	 *    if err != nil {
-	 *        continue
-	 *    }
-	 *    objtype := rpcreflect.ObjTypeOf(kind)
-	 *    enc.Encode(jsonschema.ReflectFromObjType(objtype))
-	 *}
-	 */
+
 }

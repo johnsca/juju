@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/alecthomas/jsonschema"
+	"github.com/bcsaller/jsonschema"
 	"github.com/juju/errors"
 	"gopkg.in/juju/names.v2"
 

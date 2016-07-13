@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alecthomas/jsonschema"
+	"github.com/bcsaller/jsonschema"
 	"github.com/juju/errors"
 	"github.com/juju/replicaset"
 	"github.com/juju/utils/proxy"
