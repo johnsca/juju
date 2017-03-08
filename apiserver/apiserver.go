@@ -6,8 +6,6 @@ package apiserver
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -412,7 +410,6 @@ func (srv *Server) endpoints() []apihttp.Endpoint {
 	strictCtxt.strictValidation = true
 	strictCtxt.controllerModelOnly = true
 
-	schemaAPIHandler := srv.trackRequests(http.HandlerFunc(srv.apiSchemaHandler))
 	mainAPIHandler := srv.trackRequests(http.HandlerFunc(srv.apiHandler))
 	logStreamHandler := srv.trackRequests(newLogStreamEndpointHandler(strictCtxt))
 	debugLogHandler := srv.trackRequests(newDebugLogDBHandler(httpCtxt))
@@ -484,7 +481,6 @@ func (srv *Server) endpoints() []apihttp.Endpoint {
 		},
 	)
 	add("/model/:modeluuid/api", mainAPIHandler)
-	add("/model/:modeluuid/api/schemas", schemaAPIHandler)
 
 	// GUI now supports URLs without the model uuid, just the user/model.
 	endpoints = append(endpoints, guiEndpoints(guiURLPathPrefix+"u/:user/:modelname/", srv.dataDir, httpCtxt)...)
@@ -625,26 +621,6 @@ func registerEndpoint(ep apihttp.Endpoint, mux *pat.PatternServeMux) {
 	if ep.Method == "GET" {
 		mux.Add("HEAD", ep.Pattern, ep.Handler)
 	}
-}
-
-func (srv *Server) apiSchemaHandler(w http.ResponseWriter, req *http.Request) {
-	switch req.Method {
-	case "GET":
-		s := DescribeFacadeSchemas()
-		logger.Debugf("%v\n", s)
-		b, _ := json.MarshalIndent(s, "", "  ")
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Content-Length", fmt.Sprint(len(b)))
-		w.WriteHeader(200)
-		if _, err := w.Write(b); err != nil {
-			sendError(w, errors.NewBadRequest(errors.Annotatef(err, "failed to write schemas"), ""))
-			return
-		}
-		return
-	default:
-		sendError(w, errors.MethodNotAllowedf("unsupported method: %q", req.Method))
-	}
-
 }
 
 func (srv *Server) apiHandler(w http.ResponseWriter, req *http.Request) {

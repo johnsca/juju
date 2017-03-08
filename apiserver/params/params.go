@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bcsaller/jsonschema"
 	"github.com/juju/errors"
 	"github.com/juju/replicaset"
 	"github.com/juju/utils/proxy"
@@ -609,13 +608,6 @@ type DistributionGroupResults struct {
 type FacadeVersions struct {
 	Name     string `json:"name"`
 	Versions []int  `json:"versions"`
-}
-
-// FacadeSchema describes the jsonschema of the RPC interface for a Facacde
-type FacadeSchema struct {
-	Name    string
-	Version int
-	Schema  *jsonschema.Schema
 }
 
 // RedirectInfoResult holds the result of a RedirectInfo call.

@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bcsaller/jsonschema"
 	"github.com/juju/errors"
 	"gopkg.in/juju/names.v2"
 
@@ -404,23 +403,6 @@ func DescribeFacades() []params.FacadeVersions {
 	for i, facade := range facades {
 		result[i].Name = facade.Name
 		result[i].Versions = facade.Versions
-	}
-	return result
-}
-
-// DescribeFacadeSchemas returns the list of available Facades and their Versions
-func DescribeFacadeSchemas() []params.FacadeSchema {
-	facades := common.Facades.List()
-	result := make([]params.FacadeSchema, len(facades))
-	for i, facade := range facades {
-		result[i].Name = facade.Name
-		version := facade.Versions[len(facade.Versions)-1]
-		result[i].Version = version
-		kind, err := common.Facades.GetType(facade.Name, version)
-		if err == nil {
-			objtype := rpcreflect.ObjTypeOf(kind)
-			result[i].Schema = jsonschema.ReflectFromObjType(objtype)
-		}
 	}
 	return result
 }
