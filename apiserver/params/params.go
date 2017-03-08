@@ -611,6 +611,13 @@ type FacadeVersions struct {
 	Versions []int  `json:"versions"`
 }
 
+// FacadeSchema describes the jsonschema of the RPC interface for a Facacde
+type FacadeSchema struct {
+	Name    string
+	Version int
+	Schema  *jsonschema.Schema
+}
+
 // RedirectInfoResult holds the result of a RedirectInfo call.
 type RedirectInfoResult struct {
 	// Servers holds an entry for each server that holds the

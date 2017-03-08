@@ -484,6 +484,7 @@ func (srv *Server) endpoints() []apihttp.Endpoint {
 		},
 	)
 	add("/model/:modeluuid/api", mainAPIHandler)
+	add("/model/:modeluuid/api/schemas", schemaAPIHandler)
 
 	// GUI now supports URLs without the model uuid, just the user/model.
 	endpoints = append(endpoints, guiEndpoints(guiURLPathPrefix+"u/:user/:modelname/", srv.dataDir, httpCtxt)...)
@@ -494,8 +495,6 @@ func (srv *Server) endpoints() []apihttp.Endpoint {
 	add("/gui-version", &guiVersionHandler{
 		ctxt: httpCtxt,
 	})
-	handleAll(mux, "/model/:modeluuid/api/schemas", http.HandlerFunc(srv.apiSchemaHandler))
-	handleAll(mux, "/model/:modeluuid/api", http.HandlerFunc(srv.apiHandler))
 
 	// For backwards compatibility we register all the old paths
 	add("/log", debugLogHandler)
