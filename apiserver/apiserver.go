@@ -412,6 +412,7 @@ func (srv *Server) endpoints() []apihttp.Endpoint {
 	strictCtxt.strictValidation = true
 	strictCtxt.controllerModelOnly = true
 
+	schemaAPIHandler := srv.trackRequests(http.HandlerFunc(srv.apiSchemaHandler))
 	mainAPIHandler := srv.trackRequests(http.HandlerFunc(srv.apiHandler))
 	logStreamHandler := srv.trackRequests(newLogStreamEndpointHandler(strictCtxt))
 	debugLogHandler := srv.trackRequests(newDebugLogDBHandler(httpCtxt))
